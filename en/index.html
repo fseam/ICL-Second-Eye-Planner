@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICL Second-Eye Vault Planning Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .section-title { font-size: 1.25rem; font-weight: 600; color: #0369a1; /* sky-700 */ border-bottom: 2px solid #e0f2fe; /* sky-100 */ padding-bottom: 0.5rem; margin-bottom: 1rem; margin-top: 1.5rem; }
+        .subsection-title { font-size: 1.0rem; font-weight: 600; color: #075985; /* sky-800 */ margin-top: 1rem; margin-bottom: 0.75rem; }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; /* gray-600 */ margin-bottom: 0.25rem; }
+        .input-group input, .input-group select { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; /* gray-300 */ border-radius: 0.375rem; box-shadow: inset 0 1px 2px 0 rgba(0,0,0,0.05); font-size: 0.875rem; }
+        .input-group input:focus, .input-group select:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: #0ea5e9; /* sky-500 */ box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3); }
+        .info-text { font-size: 0.75rem; color: #6b7280; /* gray-500 */ margin-top: 0.25rem; }
+        .results-display { margin-top: 1.5rem; padding: 1rem; background-color: #f9fafb; /* gray-50 */ border-radius: 0.5rem; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05); }
+        .results-display h5 { font-size: 1.125rem; font-weight: 600; color: #1e3a8a; /* indigo-800 */ margin-bottom: 0.75rem; }
+        .results-display p { margin-bottom: 0.5rem; }
+        .highlight-green { color: #059669; /* emerald-600 */ }
+        .highlight-orange { color: #f97316; /* orange-600 */ }
+        .highlight-red { color: #dc2626; /* red-600 */ }
+        .highlight-purple { color: #7c3aed; /* purple-600 */ }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-8 px-4">
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-3xl">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-sky-700 mb-3">
+            ICL Second-Eye Vault Planning Assistant
+        </h1>
+        <p class="text-xs text-gray-500 mb-3 text-center">
+            Based on The EVO Implantable Collamer Lens (ICL Model V4c; STAAR Surgical Inc.)
+        </p>
+        <p class="text-sm text-gray-600 mb-6 text-center">
+            This tool uses first-eye postoperative data to calibrate a theoretical model, assisting in planning the second-eye ICL selection to achieve an ideal vault.
+        </p>
+
+        <h2 class="section-title">Part 1: First Eye Data Input</h2>
+        <div class="subsection-title">1.1 First Eye Ocular Parameters</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <div class="input-group">
+                <label for="a_sulcus1">Horizontal Sulcus Diameter a (STS<sub>h1</sub>, mm):</label>
+                <input type="number" id="a_sulcus1" step="0.1" placeholder="e.g., 11.6">
+            </div>
+            <div class="input-group">
+                <label for="b_sulcus1">Vertical Sulcus Diameter b (STS<sub>v1</sub>, mm):</label>
+                <input type="number" id="b_sulcus1" step="0.1" placeholder="e.g., 12.2">
+            </div>
+            <div class="input-group md:col-span-2">
+                <label for="stsl1">STSL<sub>1</sub> (Lens anterior surface to sulcus plane distance, mm):</label>
+                <input type="number" id="stsl1" value="0.5" step="0.01" placeholder="e.g., 0.3 - 0.7">
+            </div>
+        </div>
+        <div class="subsection-title">1.2 First Eye ICL Parameters & Postoperative Vault</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <div class="input-group">
+                <label for="L_icl1">First Eye ICL Labeled Size (L<sub>ICL1</sub>, mm):</label>
+                <select id="L_icl1">
+                    <option value="12.1">12.1 mm</option>
+                    <option value="12.6" selected>12.6 mm</option>
+                    <option value="13.2">13.2 mm</option>
+                    <option value="13.7">13.7 mm</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="h_intrinsic1">First Eye ICL Intrinsic Vault (h<sub>int1</sub>, mm):</label>
+                <input type="number" id="h_intrinsic1" value="1.5" step="0.01">
+                <p class="info-text">Can be approximated as 1.5mm.</p>
+            </div>
+            <div class="input-group">
+                <label for="alpha_ef1">First Eye ICL Implantation Angle (α<sub>ef1</sub>, degrees):</label>
+                <input type="number" id="alpha_ef1" value="0" step="1">
+            </div>
+            <div class="input-group">
+                <label for="t_icl1">First Eye ICL Central Thickness (t<sub>ICL1</sub>, mm):</label>
+                <input type="number" id="t_icl1" value="0.250" step="0.001">
+                <p class="info-text">Default is 0.250mm.</p>
+            </div>
+            <div class="input-group md:col-span-2">
+                <label for="V_actual1">First Eye Actual Postoperative Vault (V<sub>actual1</sub>, mm):</label>
+                <input type="number" id="V_actual1" step="0.001" placeholder="e.g., 0.600">
+                <p class="info-text text-red-500 font-semibold">Please enter in millimeters (mm) (e.g., enter 0.600 for 600µm).</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Part 2: Second Eye ICL Planning</h2>
+        <div class="subsection-title">2.1 Second Eye Ocular Parameters (if different from first eye)</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <div class="input-group">
+                <label for="a_sulcus2">Horizontal Sulcus Diameter a (STS<sub>h2</sub>, mm):</label>
+                <input type="number" id="a_sulcus2" step="0.1" placeholder="Defaults to first eye">
+            </div>
+            <div class="input-group">
+                <label for="b_sulcus2">Vertical Sulcus Diameter b (STS<sub>v2</sub>, mm):</label>
+                <input type="number" id="b_sulcus2" step="0.1" placeholder="Defaults to first eye">
+            </div>
+            <div class="input-group md:col-span-2">
+                <label for="stsl2">STSL<sub>2</sub> (Lens anterior surface to sulcus plane distance, mm):</label>
+                <input type="number" id="stsl2" step="0.01" placeholder="Defaults to first eye">
+                <p class="info-text">If the second eye has separate measurements, please modify here.</p>
+            </div>
+        </div>
+        <div class="subsection-title">2.2 Planned ICL Parameters for Second Eye</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <div class="input-group">
+                <label for="L_icl2_proposed">Planned ICL Labeled Size for Second Eye (L<sub>ICL2</sub>, mm):</label>
+                 <select id="L_icl2_proposed">
+                    <option value="12.1">12.1 mm</option>
+                    <option value="12.6" selected>12.6 mm</option>
+                    <option value="13.2">13.2 mm</option>
+                    <option value="13.7">13.7 mm</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="h_intrinsic2_proposed">Second Eye ICL Intrinsic Vault (h<sub>int2</sub>, mm):</label>
+                <input type="number" id="h_intrinsic2_proposed" value="1.5" step="0.01">
+                 <p class="info-text">Usually similar to the first eye ICL.</p>
+            </div>
+            <div class="input-group">
+                <label for="alpha_ef2_proposed">Planned ICL Implantation Angle for Second Eye (α<sub>ef2</sub>, degrees):</label>
+                <input type="number" id="alpha_ef2_proposed" value="0" step="1">
+                <p class="info-text">For non-Toric ICL, different angles can be tested. For TICL, enter its expected axis.</p>
+            </div>
+            <div class="input-group">
+                <label for="t_icl2_proposed">Second Eye ICL Central Thickness (t<sub>ICL2</sub>, mm):</label>
+                <input type="number" id="t_icl2_proposed" value="0.250" step="0.001">
+                <p class="info-text">Usually similar to the first eye ICL or estimated based on diopter.</p>
+            </div>
+        </div>
+        
+        <div class="input-group md:col-span-2 mt-4">
+            <label for="beta_internal_deg" class="block text-sm font-medium text-gray-700 mb-1">Angle between ICL internal diagonal and ef-axis |β| (degrees): (Shared for both eyes)</label>
+            <input type="number" id="beta_internal_deg" value="24.0" step="0.1" class="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded-md shadow-sm sm:text-sm" readonly title="Fixed in this version">
+            <p class="info-text">In this version, |β| is a fixed value (24.0°).</p>
+        </div>
+
+
+        <button id="calculateButton" class="mt-6 w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+            Predict Second Eye Vault
+        </button>
+
+        <div id="resultsArea" class="results-display min-h-[150px]">
+            <h5 class="border-b pb-2">Prediction Results:</h5>
+            <div id="resultsContent" class="text-sm text-gray-700 space-y-2">
+                Please fill in all parameters and click the button.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BETA_INTERNAL_DEG_DEFAULT = 24.0;
+        const IDEAL_VAULT_MIN_MM = 0.250;
+        const IDEAL_VAULT_MAX_MM = 0.750;
+        
+        function solveNewton(func, derivative, initialGuess, tolerance = 1e-9, maxIterations = 100) {
+            let x = initialGuess;
+            for (let i = 0; i < maxIterations; i++) {
+                const fx = func(x);
+                const fpx = derivative(x);
+                if (Math.abs(fpx) < 1e-12) return NaN;
+                const xNext = x - fx / fpx;
+                if (Math.abs(xNext - x) < tolerance) return xNext;
+                x = xNext;
+            }
+            return NaN;
+        }
+
+        function calculateArcLengthFromChordAndVault(chord, vault_intrinsic) {
+            if (vault_intrinsic < 0 || chord <= 0) {
+                return { error: "ICL intrinsic vault cannot be negative, and ICL chord length must be positive." };
+            }
+            if (Math.abs(vault_intrinsic) < 1e-9) { 
+                return { arcLength: chord, R_intrinsic: Infinity, x_intrinsic_rad: 0 };
+            }
+            if (vault_intrinsic * 2 >= chord) { 
+                return { error: "ICL intrinsic vault is too large (≥ half of the chord length), so a valid circular arc cannot be formed." };
+            }
+            const H = vault_intrinsic;
+            const C = chord;
+            const R_intrinsic = (H / 2) + (C * C) / (8 * H);
+            if (R_intrinsic < H || R_intrinsic < C/2 ) {
+                return { error: "The intrinsic radius R calculated from the chord and intrinsic vault is not reasonable." };
+            }
+            const cos_x_val = 1 - H / R_intrinsic;
+            let x_intrinsic_rad;
+            if (cos_x_val < -1.00000001 || cos_x_val > 1.00000001) { 
+                return { error: `The calculated cos value (${cos_x_val.toFixed(6)}) for the intrinsic half-angle x is out of the valid range [-1, 1].` };
+            }
+            const clamped_cos_x_val = Math.max(-1, Math.min(1, cos_x_val));
+            x_intrinsic_rad = Math.acos(clamped_cos_x_val);
+            
+            const S_calculated = R_intrinsic * 2 * x_intrinsic_rad;
+            return { arcLength: S_calculated, R_intrinsic: R_intrinsic, x_intrinsic_rad: x_intrinsic_rad };
+        }
+
+        function getSulcusChordLength(r_x_sulcus, r_y_sulcus, phi_deg_horizontal) {
+            const phi_rad_horizontal = phi_deg_horizontal * (Math.PI / 180);
+            const cos_phi_sq = Math.cos(phi_rad_horizontal) ** 2;
+            const sin_phi_sq = Math.sin(phi_rad_horizontal) ** 2;
+            const numerator_rho_sq = (r_x_sulcus ** 2 * r_y_sulcus ** 2);
+            const denominator_rho_sq = (r_y_sulcus ** 2 * cos_phi_sq) + (r_x_sulcus ** 2 * sin_phi_sq);
+            if (Math.abs(denominator_rho_sq) < 1e-12) return NaN;
+            const rho_sq = numerator_rho_sq / denominator_rho_sq;
+            return 2 * Math.sqrt(rho_sq);
+        }
+
+        function getTheoreticalClinicalVault(a_sulcus_eye, b_sulcus_eye, stsl_eye, L_icl_chord, h_intrinsic, alpha_ef_deg, t_icl, beta_internal_abs_deg) {
+            const arcResult = calculateArcLengthFromChordAndVault(L_icl_chord, h_intrinsic);
+            if (arcResult.error) return { error: `calculating ICL arc length: ${arcResult.error}` };
+            const S_icl_arc = arcResult.arcLength;
+
+            const r_x = a_sulcus_eye / 2.0;
+            const r_y = b_sulcus_eye / 2.0;
+
+            const phi_deg_ac = alpha_ef_deg - beta_internal_abs_deg;
+            const phi_deg_bd = alpha_ef_deg + beta_internal_abs_deg;
+
+            const chord_ac = getSulcusChordLength(r_x, r_y, phi_deg_ac);
+            const chord_bd = getSulcusChordLength(r_x, r_y, phi_deg_bd);
+
+            if (isNaN(chord_ac) || isNaN(chord_bd)) return { error: "Error calculating elliptical chord length." };
+
+            let dominant_chord = (chord_ac <= chord_bd) ? chord_ac : chord_bd;
+
+            if (dominant_chord > S_icl_arc + 1e-9) return { error: `Dominant sulcus chord (${dominant_chord.toFixed(4)}mm) is greater than ICL arc length (${S_icl_arc.toFixed(4)}mm).` };
+            
+            let h_geom;
+            if (Math.abs(dominant_chord - S_icl_arc) < 1e-9) {
+                h_geom = 0.0;
+            } else {
+                const k = dominant_chord / S_icl_arc;
+                const funcToSolve = (x) => k * x - Math.sin(x);
+                const derivativeOfFunc = (x) => k - Math.cos(x);
+                let x_initial = Math.PI / 4;
+                if (k > 0.95) x_initial = Math.sqrt(6 * (1 - k));
+                if (isNaN(x_initial) || x_initial < 1e-6) x_initial = 1e-5;
+                
+                let x_solution = solveNewton(funcToSolve, derivativeOfFunc, x_initial);
+                if (isNaN(x_solution) || x_solution <= 0 || x_solution >= Math.PI / 2) {
+                    x_solution = solveNewton(funcToSolve, derivativeOfFunc, 0.01);
+                     if (isNaN(x_solution) || x_solution <= 0 || x_solution >= Math.PI / 2) {
+                         return { error: "Numerical solver failed to find a suitable solution (x) for geometric vault calculation." };
+                     }
+                }
+                const theta_arc_rad = 2 * x_solution;
+                const R_arc = (Math.abs(theta_arc_rad) < 1e-12) ? Infinity : S_icl_arc / theta_arc_rad;
+                h_geom = R_arc * (1 - Math.cos(x_solution));
+            }
+            
+            const theoretical_clinical_vault = h_geom - t_icl - stsl_eye;
+            return { value: theoretical_clinical_vault, h_geom: h_geom, S_icl_arc: S_icl_arc };
+        }
+        
+        const calculateButton = document.getElementById('calculateButton');
+        const resultsContent = document.getElementById('resultsContent');
+        const betaInternalInput = document.getElementById('beta_internal_deg');
+        betaInternalInput.value = BETA_INTERNAL_DEG_DEFAULT;
+
+        const a_sulcus1_input = document.getElementById('a_sulcus1');
+        const b_sulcus1_input = document.getElementById('b_sulcus1');
+        const stsl1_input = document.getElementById('stsl1');
+
+        const a_sulcus2_input = document.getElementById('a_sulcus2');
+        const b_sulcus2_input = document.getElementById('b_sulcus2');
+        const stsl2_input = document.getElementById('stsl2');
+
+        a_sulcus1_input.addEventListener('input', () => { a_sulcus2_input.value = a_sulcus1_input.value; });
+        b_sulcus1_input.addEventListener('input', () => { b_sulcus2_input.value = b_sulcus1_input.value; });
+        stsl1_input.addEventListener('input', () => { stsl2_input.value = stsl1_input.value; });
+
+
+        calculateButton.addEventListener('click', () => {
+            resultsContent.innerHTML = ""; 
+
+            if (a_sulcus1_input.value && a_sulcus2_input.value === "") a_sulcus2_input.value = a_sulcus1_input.value;
+            if (b_sulcus1_input.value && b_sulcus2_input.value === "") b_sulcus2_input.value = b_sulcus1_input.value;
+            if (stsl1_input.value && stsl2_input.value === "") stsl2_input.value = stsl1_input.value;
+
+
+            const params = {
+                a_sulcus1: parseFloat(a_sulcus1_input.value),
+                b_sulcus1: parseFloat(b_sulcus1_input.value),
+                stsl1: parseFloat(stsl1_input.value),
+                L_icl1: parseFloat(document.getElementById('L_icl1').value),
+                h_intrinsic1: parseFloat(document.getElementById('h_intrinsic1').value),
+                alpha_ef1: parseFloat(document.getElementById('alpha_ef1').value),
+                t_icl1: parseFloat(document.getElementById('t_icl1').value),
+                V_actual1: parseFloat(document.getElementById('V_actual1').value),
+                
+                a_sulcus2: parseFloat(a_sulcus2_input.value),
+                b_sulcus2: parseFloat(b_sulcus2_input.value),
+                stsl2: parseFloat(stsl2_input.value),
+                L_icl2_proposed: parseFloat(document.getElementById('L_icl2_proposed').value),
+                h_intrinsic2_proposed: parseFloat(document.getElementById('h_intrinsic2_proposed').value),
+                alpha_ef2_proposed: parseFloat(document.getElementById('alpha_ef2_proposed').value),
+                t_icl2_proposed: parseFloat(document.getElementById('t_icl2_proposed').value),
+                beta_internal_deg: parseFloat(betaInternalInput.value)
+            };
+
+            for (const key in params) {
+                if (isNaN(params[key])) {
+                    resultsContent.innerHTML = `<p class="highlight-red">Error: Input for "${key}" is invalid or missing.</p>`;
+                    return;
+                }
+            }
+            if (params.stsl1 < 0 || params.t_icl1 < 0 || params.t_icl2_proposed < 0 || params.V_actual1 < 0 || params.stsl2 < 0) {
+                 resultsContent.innerHTML = `<p class="highlight-red">Error: STSL, ICL thickness, and actual postoperative vault cannot be negative.</p>`;
+                return;
+            }
+
+            const resultEye1 = getTheoreticalClinicalVault(
+                params.a_sulcus1, params.b_sulcus1, params.stsl1,
+                params.L_icl1, params.h_intrinsic1, params.alpha_ef1,
+                params.t_icl1, params.beta_internal_deg
+            );
+
+            if (resultEye1.error) {
+                resultsContent.innerHTML = `<p class="highlight-red">Error calculating first eye theoretical vault: ${resultEye1.error}</p>`;
+                return;
+            }
+            const V_theoretical_clinical1 = resultEye1.value;
+            const h_geom1 = resultEye1.h_geom;
+            const S_icl_arc1 = resultEye1.S_icl_arc;
+
+            const offset = params.V_actual1 - V_theoretical_clinical1;
+
+            const resultEye2Proposed = getTheoreticalClinicalVault(
+                params.a_sulcus2, params.b_sulcus2, params.stsl2, 
+                params.L_icl2_proposed, params.h_intrinsic2_proposed, params.alpha_ef2_proposed,
+                params.t_icl2_proposed, params.beta_internal_deg
+            );
+
+            if (resultEye2Proposed.error) {
+                resultsContent.innerHTML = `<p class="highlight-red">Error calculating planned second eye theoretical vault: ${resultEye2Proposed.error}</p>`;
+                return;
+            }
+            const V_theoretical_clinical2_proposed = resultEye2Proposed.value;
+            const h_geom2_proposed = resultEye2Proposed.h_geom;
+            const S_icl_arc2_proposed = resultEye2Proposed.S_icl_arc;
+
+            const V_predicted_actual_eye2 = V_theoretical_clinical2_proposed + offset;
+
+            let outputHtml = `
+                <div class="results-section">
+                    <h5>First Eye Analysis Results:</h5>
+                    <p>Ocular Params<sub>1</sub>: a=${params.a_sulcus1.toFixed(2)}mm, b=${params.b_sulcus1.toFixed(2)}mm, STSL=${params.stsl1.toFixed(3)}mm</p>
+                   <p>ICL<sub>1</sub> (L=${params.L_icl1.toFixed(2)}mm, h<sub>int</sub>=${params.h_intrinsic1.toFixed(2)}mm, α=${params.alpha_ef1.toFixed(1)}°, t=${params.t_icl1.toFixed(3)}mm) -> S<sub>arc1</sub>: ${S_icl_arc1.toFixed(4)} mm</p>
+                    <p>Theoretical Geometric Vault (h<sub>geom1</sub>): ${h_geom1.toFixed(4)} mm</p>
+                    <p>Theoretical Clinical Vault (V<sub>tc1</sub>): ${V_theoretical_clinical1.toFixed(4)} mm</p>
+                    <p>Actual Clinical Vault (V<sub>actual1</sub>): ${params.V_actual1.toFixed(4)} mm</p>
+                    <p><strong>Individualized Offset (Offset = V<sub>actual1</sub> - V<sub>tc1</sub>): <span class="highlight-purple">${offset.toFixed(4)} mm</span> (${(offset * 1000).toFixed(1)} µm)</strong></p>
+                </div>
+
+                <div class="results-section mt-4">
+                    <h5>Second Eye Planning Prediction:</h5>
+                    <p>Ocular Params<sub>2</sub>: a=${params.a_sulcus2.toFixed(2)}mm, b=${params.b_sulcus2.toFixed(2)}mm, STSL=${params.stsl2.toFixed(3)}mm</p>
+                    <p>Planned ICL<sub>2</sub> (L=${params.L_icl2_proposed.toFixed(2)}mm, h<sub>int</sub>=${params.h_intrinsic2_proposed.toFixed(2)}mm, α=${params.alpha_ef2_proposed.toFixed(1)}°, t=${params.t_icl2_proposed.toFixed(3)}mm) -> S<sub>arc2</sub>: ${S_icl_arc2_proposed.toFixed(4)} mm</p>
+                    <p>Theoretical Geometric Vault (h<sub>geom2</sub>): ${h_geom2_proposed.toFixed(4)} mm</p>
+                    <p>Theoretical Clinical Vault (V<sub>tc2</sub>): ${V_theoretical_clinical2_proposed.toFixed(4)} mm</p>
+                    <p><strong>Predicted Clinical Vault for Second Eye (V<sub>tc2</sub> + Offset): <span class="text-2xl font-bold highlight-green">${(V_predicted_actual_eye2 * 1000).toFixed(1)} µm</span> (${V_predicted_actual_eye2.toFixed(4)} mm)</strong></p>
+                </div>
+            `;
+
+            if (V_predicted_actual_eye2 >= IDEAL_VAULT_MIN_MM && V_predicted_actual_eye2 <= IDEAL_VAULT_MAX_MM) {
+                outputHtml += `<p class="mt-3 text-green-600 font-semibold">Assessment: The predicted clinical vault for the second eye is within the ideal range (${(IDEAL_VAULT_MIN_MM*1000).toFixed(0)}-${(IDEAL_VAULT_MAX_MM*1000).toFixed(0)}µm).</p>`;
+            } else if (V_predicted_actual_eye2 < IDEAL_VAULT_MIN_MM) {
+                outputHtml += `<p class="mt-3 highlight-orange font-semibold">Assessment: The predicted clinical vault for the second eye is too low (below ${(IDEAL_VAULT_MIN_MM*1000).toFixed(0)}µm). Consider adjusting the ICL size or implantation angle for the second eye.</p>`;
+            } else {
+                outputHtml += `<p class="mt-3 highlight-orange font-semibold">Assessment: The predicted clinical vault for the second eye is too high (above ${(IDEAL_VAULT_MAX_MM*1000).toFixed(0)}µm). Consider adjusting the ICL size or implantation angle for the second eye.</p>`;
+            }
+             if (V_predicted_actual_eye2 < 0) {
+                 outputHtml += "<p class='mt-2 highlight-red text-xs font-semibold'>Warning: The predicted clinical vault for the second eye is negative! This may indicate contact between the ICL and the crystalline lens, or an unreasonable result due to input parameters/model simplification.</p>";
+            }
+
+            resultsContent.innerHTML = outputHtml;
+        });
+    </script>
+</body>
+</html>
+
